@@ -1,0 +1,20 @@
+services:
+  database:
+    container_name: audit-logs-database
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: audit_logs
+      POSTGRES_ENV: ${POSTGRES_ENV}
+    ports:
+      - '5432:5432'
+    volumes:
+      - './scripts:/docker-entrypoint-initdb.d'
+      - './database/postgres-data:/var/lib/postgresql/data'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d audit_logs']
+      interval: 10s
+      timeout: 5s
+      retries: 5

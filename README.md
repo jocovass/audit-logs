@@ -6,39 +6,39 @@ A standalone audit logging service built with NestJS 11 and MikroORM (PostgreSQL
 
 ## Overview
 
-| Feature | Description |
-|---------|-------------|
-| **Event Ingestion** | Receive audit events via HTTP, Webhooks, or Message Queues |
-| **Validation** | Normalize and validate incoming data |
-| **Immutable Storage** | Store audit logs that cannot be modified or deleted |
-| **Query API** | REST API with filtering, pagination, and search |
-| **Dashboard** | Timeline view, filters, and analytics graphs |
+| Feature               | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| **Event Ingestion**   | Receive audit events via HTTP, Webhooks, or Message Queues |
+| **Validation**        | Normalize and validate incoming data                       |
+| **Immutable Storage** | Store audit logs that cannot be modified or deleted        |
+| **Query API**         | REST API with filtering, pagination, and search            |
+| **Dashboard**         | Timeline view, filters, and analytics graphs               |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | NestJS 11 |
-| ORM | MikroORM 6 |
-| Database | PostgreSQL 16 |
-| Validation | class-validator + class-transformer |
-| API Docs | Swagger (OpenAPI) |
-| Message Queue | BullMQ (Redis) - *Phase 2* |
-| Testing | Jest |
+| Layer         | Technology                          |
+| ------------- | ----------------------------------- |
+| Framework     | NestJS 11                           |
+| ORM           | MikroORM 6                          |
+| Database      | PostgreSQL 16                       |
+| Validation    | class-validator + class-transformer |
+| API Docs      | Swagger (OpenAPI)                   |
+| Message Queue | BullMQ (Redis) - _Phase 2_          |
+| Testing       | Jest                                |
 
 ---
 
 ## SOLID Principles Applied
 
-| Principle | How We Apply It |
-|-----------|-----------------|
+| Principle                 | How We Apply It                                                                                                                                                       |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **S**ingle Responsibility | Each service does ONE thing: `AuditLogService` handles business logic, `AuditLogRepository` handles persistence, `EventNormalizerService` handles data transformation |
-| **O**pen/Closed | New event sources (HTTP, Webhook, Queue) can be added without modifying existing code — they all implement `IEventSource` |
-| **L**iskov Substitution | Any `IEventSource` implementation can replace another; any `IStorageProvider` can be swapped (Postgres → MongoDB) |
-| **I**nterface Segregation | Small, focused interfaces: `IAuditLogRepository` (CRUD), `IEventValidator` (validation), `IEventNormalizer` (transformation) |
-| **D**ependency Inversion | Services depend on interfaces (abstractions), not concrete classes. Repository interface injected via NestJS DI |
+| **O**pen/Closed           | New event sources (HTTP, Webhook, Queue) can be added without modifying existing code — they all implement `IEventSource`                                             |
+| **L**iskov Substitution   | Any `IEventSource` implementation can replace another; any `IStorageProvider` can be swapped (Postgres → MongoDB)                                                     |
+| **I**nterface Segregation | Small, focused interfaces: `IAuditLogRepository` (CRUD), `IEventValidator` (validation), `IEventNormalizer` (transformation)                                          |
+| **D**ependency Inversion  | Services depend on interfaces (abstractions), not concrete classes. Repository interface injected via NestJS DI                                                       |
 
 ---
 
@@ -47,45 +47,45 @@ A standalone audit logging service built with NestJS 11 and MikroORM (PostgreSQL
 ```typescript
 interface AuditLog {
   // Identity
-  id: string;                    // UUID v7 (time-sortable)
-  correlationId?: string;        // Links related events
-  
+  id: string; // UUID v7 (time-sortable)
+  correlationId?: string; // Links related events
+
   // Timing
-  timestamp: Date;               // When event occurred
-  receivedAt: Date;              // When service received it
-  
+  timestamp: Date; // When event occurred
+  receivedAt: Date; // When service received it
+
   // Actor (Who)
   actor: {
-    id: string;                  // User/system ID
+    id: string; // User/system ID
     type: 'user' | 'system' | 'api_key';
     email?: string;
     ipAddress?: string;
     userAgent?: string;
   };
-  
+
   // Action (What)
-  action: string;                // CREATE, UPDATE, DELETE, LOGIN, EXPORT, etc.
-  category: string;              // authentication, data_access, admin, etc.
-  
+  action: string; // CREATE, UPDATE, DELETE, LOGIN, EXPORT, etc.
+  category: string; // authentication, data_access, admin, etc.
+
   // Resource (On What)
   resource: {
-    type: string;                // user, order, document, etc.
+    type: string; // user, order, document, etc.
     id: string;
     name?: string;
   };
-  
+
   // Changes (For mutations)
   changes?: {
     before?: Record<string, unknown>;
     after?: Record<string, unknown>;
   };
-  
+
   // Context
-  source: string;                // web, api, webhook, queue
+  source: string; // web, api, webhook, queue
   metadata?: Record<string, unknown>;
-  
+
   // Integrity
-  checksum: string;              // SHA-256 hash for immutability verification
+  checksum: string; // SHA-256 hash for immutability verification
 }
 ```
 
@@ -174,6 +174,7 @@ src/
 ## Implementation Phases
 
 ### Phase 1: Foundation (Week 1)
+
 - [ ] Set up MikroORM with PostgreSQL
 - [ ] Create configuration module
 - [ ] Define core interfaces (repository, event source)
@@ -184,6 +185,7 @@ src/
 - [ ] Add checksum generation for immutability
 
 ### Phase 2: Event Ingestion (Week 2)
+
 - [ ] Create ingestion module
 - [ ] Build HTTP events controller (POST /events)
 - [ ] Build webhook controller (POST /webhooks/:provider)
@@ -192,6 +194,7 @@ src/
 - [ ] Support multiple webhook formats (GitHub, Stripe, custom)
 
 ### Phase 3: Query API (Week 3)
+
 - [ ] Build audit-logs controller with full CRUD (except UPDATE/DELETE)
 - [ ] Implement filtering (by actor, action, resource, date range)
 - [ ] Add pagination (cursor-based for large datasets)
@@ -199,18 +202,21 @@ src/
 - [ ] Generate Swagger documentation
 
 ### Phase 4: Dashboard & Analytics (Week 4)
+
 - [ ] Create dashboard module
 - [ ] Implement timeline aggregation (events per hour/day)
 - [ ] Add analytics service (top actors, common actions)
 - [ ] Build category breakdown endpoints
 
 ### Phase 5: Message Queues (Week 5)
+
 - [ ] Add BullMQ integration
 - [ ] Create queue processor for async event handling
 - [ ] Implement retry logic for failed events
 - [ ] Add dead-letter queue for unprocessable events
 
 ### Phase 6: Production Hardening (Week 6)
+
 - [ ] Add authentication (API keys or JWT)
 - [ ] Implement rate limiting
 - [ ] Add database indexes for query performance
@@ -223,35 +229,36 @@ src/
 
 ### Event Ingestion
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/events` | Ingest a single audit event |
-| `POST` | `/events/batch` | Ingest multiple events |
+| Method | Endpoint              | Description                           |
+| ------ | --------------------- | ------------------------------------- |
+| `POST` | `/events`             | Ingest a single audit event           |
+| `POST` | `/events/batch`       | Ingest multiple events                |
 | `POST` | `/webhooks/:provider` | Receive webhook from external service |
 
 ### Audit Logs Query
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/audit-logs` | List logs with filtering |
-| `GET` | `/audit-logs/:id` | Get single log by ID |
-| `GET` | `/audit-logs/search` | Full-text search |
-| `GET` | `/audit-logs/export` | Export logs as CSV/JSON |
+| Method | Endpoint             | Description              |
+| ------ | -------------------- | ------------------------ |
+| `GET`  | `/audit-logs`        | List logs with filtering |
+| `GET`  | `/audit-logs/:id`    | Get single log by ID     |
+| `GET`  | `/audit-logs/search` | Full-text search         |
+| `GET`  | `/audit-logs/export` | Export logs as CSV/JSON  |
 
 ### Dashboard
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/dashboard/timeline` | Events over time |
-| `GET` | `/dashboard/stats` | Summary statistics |
-| `GET` | `/dashboard/top-actors` | Most active actors |
-| `GET` | `/dashboard/actions` | Action breakdown |
+| Method | Endpoint                | Description        |
+| ------ | ----------------------- | ------------------ |
+| `GET`  | `/dashboard/timeline`   | Events over time   |
+| `GET`  | `/dashboard/stats`      | Summary statistics |
+| `GET`  | `/dashboard/top-actors` | Most active actors |
+| `GET`  | `/dashboard/actions`    | Action breakdown   |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - PostgreSQL 16
 - pnpm
@@ -275,6 +282,11 @@ pnpm start:dev
 ### Environment Variables
 
 ```env
+# Database Container
+POSTGRES_PASSWORD=postgres
+POSTGRES_MIGRATE_PASSWORD=postgres
+POSTGRES_ENV=development
+
 # Database
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
@@ -320,14 +332,17 @@ pnpm add -D @mikro-orm/cli
 ## Learning Resources
 
 ### NestJS
+
 - [Official Docs](https://docs.nestjs.com/)
 - [NestJS Fundamentals Course](https://courses.nestjs.com/)
 
 ### MikroORM
+
 - [Official Docs](https://mikro-orm.io/docs)
 - [NestJS Integration](https://mikro-orm.io/docs/usage-with-nestjs)
 
 ### SOLID Principles
+
 - [SOLID in TypeScript](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design)
 
 ---
