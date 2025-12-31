@@ -175,8 +175,36 @@ src/
 
 ### Phase 1: Foundation (Week 1)
 
-- [ ] Set up MikroORM with PostgreSQL
-- [ ] Create configuration module
+- [x] Set up MikroORM with PostgreSQL
+  - [ ] Might need to add a standalone config for CLI migrations
+
+    ```bash
+      # Example
+      import 'dotenv/config';
+      import { buildDatabaseConfig } from './mikro-orm.config';
+
+      export default buildDatabaseConfig({
+        host: process.env.DATABASE_HOST!,
+        port: parseInt(process.env.DATABASE_PORT!, 10),
+        user: process.env.DATABASE_USER!,
+        password: process.env.DATABASE_PASSWORD!,
+        dbName: process.env.DATABASE_NAME!,
+        debug: process.env.DATABASE_DEBUG_LOGGING === 'true',
+        ssl: process.env.DATABASE_SSL !== 'false',
+      });
+
+      # package.json
+      {
+        "mikro-orm": {
+          "useTsNode": true,
+          "configPaths": ["./src/database/mikro-orm.cli.config.ts"]
+        }
+      }
+    ```
+
+  - [ ] SSL option might need more granualar control e.g. `rejectUnauthorized`
+
+- [x] Create configuration module
 - [ ] Define core interfaces (repository, event source)
 - [ ] Implement AuditLog entity
 - [ ] Create DTOs with validation
