@@ -8,7 +8,15 @@ import { configSchema } from './schema/config.schema';
       envFilePath: ['.env.local', '.env'],
       isGlobal: true,
       cache: true,
-      validationSchema: configSchema,
+      validate: (config) => {
+        const result = configSchema.safeParse(config);
+        if (!result.success) {
+          // FIXME: Improve error message
+          // const errors = result.error;
+          throw new Error('Config validation error');
+        }
+        return result.data;
+      },
     }),
   ],
   providers: [],

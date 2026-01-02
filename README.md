@@ -42,12 +42,43 @@ A standalone audit logging service built with NestJS 11 and MikroORM (PostgreSQL
 
 ---
 
-## Audit Log Schema (Industry Standard)
+## Entity Schemas
+
+### Account (Multi-Tenancy)
+
+```typescript
+interface Account {
+  id: string; // UUID v7
+  name: string; // Display name
+  email: string; // Unique, used for login
+  passwordHash: string; // Hashed password (never store plain text)
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### API Key (Authentication for Event Ingestion)
+
+```typescript
+interface ApiKey {
+  id: string; // UUID v7
+  accountId: string; // FK to Account
+  hashedKey: string; // Hashed API key (never store plain text)
+  name: string; // Label (e.g., "Production", "Staging")
+  expiresAt?: Date; // Optional expiration
+  revokedAt?: Date; // Null = active, Date = revoked
+  lastUsedAt?: Date; // Track usage
+  createdAt: Date;
+}
+```
+
+### Audit Log (Industry Standard)
 
 ```typescript
 interface AuditLog {
   // Identity
   id: string; // UUID v7 (time-sortable)
+  accountId: string; // FK to Account (tenant isolation)
   correlationId?: string; // Links related events
 
   // Timing
@@ -89,6 +120,17 @@ interface AuditLog {
 }
 ```
 
+### Entity Relationships
+
+```
+Account (1) ──→ (many) ApiKey
+Account (1) ──→ (many) AuditLog
+```
+
+- **Account** owns multiple **API Keys** for event ingestion
+- **Account** owns multiple **Audit Logs** (tenant isolation)
+- All queries are scoped by `accountId` to ensure data isolation
+
 ---
 
 ## Project Structure
@@ -116,6 +158,72 @@ src/
 │   ├── config.module.ts
 │   ├── database.config.ts
 │   └── app.config.ts
+│
+├── accounts/                         # Account Management Module
+│   ├── accounts.module.ts
+│   │
+│   ├── entities/
+│   │   └── account.entity.ts               # MikroORM entity
+│   │
+│   ├── dto/
+│   │   ├── create-account.dto.ts           # Registration input
+│   │   └── account-response.dto.ts         # Output shape
+│   │
+│   ├── interfaces/
+│   │   └── account-repository.interface.ts # (D: Dependency Inversion)
+│   │
+│   ├── repositories/
+│   │   └── account.repository.ts           # MikroORM implementation
+│   │
+│   ├── services/
+│   │   └── account.service.ts              # Business logic
+│   │
+│   └── controllers/
+│       └── accounts.controller.ts          # REST API endpoints
+│
+├── api-keys/                         # API Key Management Module
+│   ├── api-keys.module.ts
+│   │
+│   ├── entities/
+│   │   └── api-key.entity.ts               # MikroORM entity
+│   │
+│   ├── dto/
+│   │   ├── create-api-key.dto.ts           # Input validation
+│   │   └── api-key-response.dto.ts         # Output shape (never expose key)
+│   │
+│   ├── interfaces/
+│   │   └── api-key-repository.interface.ts # (D: Dependency Inversion)
+│   │
+│   ├── repositories/
+│   │   └── api-key.repository.ts           # MikroORM implementation
+│   │
+│   ├── services/
+│   │   └── api-key.service.ts              # Business logic
+│   │
+│   ├── guards/
+│   │   └── api-key.guard.ts                # Validates API key on requests
+│   │
+│   └── controllers/
+│       └── api-keys.controller.ts          # REST API endpoints
+│
+├── auth/                             # Authentication Module
+│   ├── auth.module.ts
+│   │
+│   ├── dto/
+│   │   ├── login.dto.ts                    # Login input
+│   │   └── auth-response.dto.ts            # JWT response
+│   │
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts               # Protects dashboard routes
+│   │
+│   ├── strategies/
+│   │   └── jwt.strategy.ts                 # Passport JWT strategy
+│   │
+│   ├── services/
+│   │   └── auth.service.ts                 # Login, token generation
+│   │
+│   └── controllers/
+│       └── auth.controller.ts              # POST /auth/login
 │
 ├── audit-logs/                       # Core Domain Module
 │   ├── audit-logs.module.ts
@@ -176,7 +284,7 @@ src/
 ### Phase 1: Foundation (Week 1)
 
 - [x] Set up MikroORM with PostgreSQL
-  - [ ] Might need to add a standalone config for CLI migrations
+  - [x] Might need to add a standalone config for CLI migrations
 
     ```bash
       # Example
@@ -205,7 +313,7 @@ src/
   - [ ] SSL option might need more granualar control e.g. `rejectUnauthorized`
 
 - [x] Create configuration module
-- [ ] Define core interfaces (repository, event source)
+- [x] Define core interfaces (repository, event source)
 - [ ] Implement AuditLog entity
 - [ ] Create DTOs with validation
 - [ ] Build AuditLogRepository (implements interface)
