@@ -76,14 +76,18 @@ interface ApiKey {
 
 ```typescript
 interface AuditLog {
+  // The id, createdAt, updatedAt are defined in the BaseEntity class
   // Identity
   id: string; // UUID v7 (time-sortable)
+  // When the audit log was received and created
+  createdAt: string; // UUID v7
+  updatedAt: string; // UUID v7
+
   accountId: string; // FK to Account (tenant isolation)
   correlationId?: string; // Links related events
 
   // Timing
   timestamp: Date; // When event occurred
-  receivedAt: Date; // When service received it
 
   // Actor (Who)
   actor: {
@@ -99,17 +103,15 @@ interface AuditLog {
   category: string; // authentication, data_access, admin, etc.
 
   // Resource (On What)
-  resource: {
-    type: string; // user, order, document, etc.
-    id: string;
-    name?: string;
-  };
+  // Example.
+  // type: [user, order, document]; id; name
+  resource: Record<string, unknown>;
 
-  // Changes (For mutations)
-  changes?: {
-    before?: Record<string, unknown>;
-    after?: Record<string, unknown>;
-  };
+  // Snapshot of the data the operation happend on
+  data?: Record<string, unknown>;
+
+  // The diff if the operation was update or smthing
+  changes?: Record<string, unkown>;
 
   // Context
   source: string; // web, api, webhook, queue

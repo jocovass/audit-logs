@@ -24,6 +24,8 @@ export function buildDatabaseConfig({
 }): ReturnType<typeof defineConfig> {
   const highlighter = new SqlHighlighter();
 
+  console.log(process.env);
+
   return defineConfig({
     driver: PostgreSqlDriver,
     host,
@@ -31,6 +33,7 @@ export function buildDatabaseConfig({
     user,
     password,
     dbName,
+    schema: 'audit',
     debug,
     driverOptions: {
       connection: {
@@ -56,11 +59,3 @@ export function buildDatabaseConfig({
     highlighter: debug ? highlighter : undefined,
   });
 }
-
-export default buildDatabaseConfig({
-  host: process.env.DATABASE_HOST!,
-  port: parseInt(process.env.DATABASE_PORT!, 10),
-  user: process.env.DATABASE_USER!,
-  password: process.env.DATABASE_PASSWORD!,
-  dbName: process.env.DATABASE_NAME!,
-});

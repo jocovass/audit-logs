@@ -1,11 +1,11 @@
 import { PrimaryKey, Property, OptionalProps, types } from '@mikro-orm/core';
-import { v7 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
 
 export abstract class BaseEntity<Optional = never> {
   [OptionalProps]?: 'createdAt' | 'updatedAt' | Optional;
 
   @PrimaryKey({ type: types.uuid })
-  id = v7();
+  id = uuidv7();
 
   @Property({ type: 'datetime', columnType: 'timestamptz' })
   createdAt = new Date();
