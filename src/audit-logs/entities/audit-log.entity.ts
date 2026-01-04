@@ -1,5 +1,11 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntity } from '../../database/entity.base';
+import {
+  AuditAction,
+  AuditActorType,
+  AuditCategory,
+  AuditSource,
+} from '../enums/audit-log.enums';
 
 @Entity({ tableName: 'audit_logs' })
 @Index({ properties: ['timestamp'] })
@@ -20,7 +26,7 @@ export class AuditLog extends BaseEntity {
   @Property({ type: 'jsonb' })
   actor: {
     id: string;
-    type: 'user' | 'system' | 'api_key';
+    type: AuditActorType;
     email?: string;
     ipAddress?: string;
     userAgent?: string;
@@ -49,29 +55,4 @@ export class AuditLog extends BaseEntity {
 
   @Property()
   checksum!: string;
-}
-
-export enum AuditAction {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  READ = 'read',
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-  EXPORT = 'export',
-}
-
-export enum AuditCategory {
-  USER = 'user',
-  AUTHENTICATION = 'authentication',
-  DATA = 'data',
-  SYSTEM = 'system',
-  SECURITY = 'security',
-}
-
-export enum AuditSource {
-  API = 'api',
-  WEB = 'web',
-  SYSTEM = 'system',
-  WORKER = 'worker',
 }

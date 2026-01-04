@@ -1,5 +1,5 @@
 // Repository interfaces
-export * from './audit-log-repository.interface';
+export * from '../../audit-logs/interfaces/audit-log-repository.interface';
 export * from './account-repository.interface';
 export * from './api-key-repository.interface';
 

@@ -1,33 +1,32 @@
 // NOTE: Once AuditLog entity is defined, replace all 'any' with it
 // import { AuditLog } from '../../audit-logs/entities/audit-log.entity';
 
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '../../common/interfaces/api-interface';
+import {
+  AuditAction,
+  AuditActorType,
+  AuditCategory,
+  AuditSource,
+} from '../enums/audit-log.enums';
+
 /**
  * Query filters for audit logs
  * All queries are scoped by accountId for tenant isolation
  */
 export type AuditLogQueryFilters = {
   actorId?: string;
-  actorType?: 'user' | 'system' | 'api_key';
-  action?: string;
-  category?: string;
-  resourceType?: string;
-  resourceId?: string;
-  source?: string;
+  actorType?: AuditActorType;
+  action?: AuditAction;
+  category?: AuditCategory;
+  source?: AuditSource;
   correlationId?: string;
   startDate?: Date;
   endDate?: Date;
 };
 
-export type PaginationOptions = {
-  cursor?: string; // UUID v7 of last item (cursor-based pagination)
-  limit: number;
-};
-
-export type PaginatedResult<T> = {
-  data: T[];
-  nextCursor: string | null;
-  hasMore: boolean;
-};
 /**
  * Audit Log Repository Interface
  *

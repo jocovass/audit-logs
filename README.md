@@ -79,7 +79,7 @@ interface AuditLog {
   // The id, createdAt, updatedAt are defined in the BaseEntity class
   // Identity
   id: string; // UUID v7 (time-sortable)
-  // When the audit log was received and created
+  // When the audit log was **received** and created
   createdAt: string; // UUID v7
   updatedAt: string; // UUID v7
 
@@ -316,8 +316,8 @@ src/
 
 - [x] Create configuration module
 - [x] Define core interfaces (repository, event source)
-- [ ] Implement AuditLog entity
-- [ ] Create DTOs with validation
+- [x] Implement AuditLog entity
+- [x] Create DTOs with validation
 - [ ] Build AuditLogRepository (implements interface)
 - [ ] Implement AuditLogService
 - [ ] Add checksum generation for immutability
