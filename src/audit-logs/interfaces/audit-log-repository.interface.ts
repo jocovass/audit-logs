@@ -1,5 +1,4 @@
-// NOTE: Once AuditLog entity is defined, replace all 'any' with it
-// import { AuditLog } from '../../audit-logs/entities/audit-log.entity';
+import { AuditLog } from '../../audit-logs/entities/audit-log.entity';
 
 import {
   PaginatedResult,
@@ -41,9 +40,8 @@ export interface IAuditLogRepository {
    */
   append(
     accountId: string,
-    // auditLog: Omit<AuditLog, 'id' | 'accountId' | 'receivedAt' | 'checksum'>,
-    auditLog: any,
-  ): Promise<any>;
+    auditLog: Omit<AuditLog, 'id' | 'accountId'>,
+  ): Promise<AuditLog>;
 
   /**
    * Find a single audit log by ID
@@ -51,8 +49,7 @@ export interface IAuditLogRepository {
    * @param accountId - Tenant identifier (for isolation)
    * @param id - Audit log ID
    */
-  //   findById(accountId: string, id: string): Promise<AuditLog | null>;
-  findById(accountId: string, id: string): Promise<any>;
+  findById(accountId: string, id: string): Promise<AuditLog | null>;
 
   /**
    * Find audit logs with filtering and pagination
@@ -64,8 +61,7 @@ export interface IAuditLogRepository {
     accountId: string,
     filters: AuditLogQueryFilters,
     pagination: PaginationOptions,
-    //   ): Promise<PaginatedResult<AuditLog>>;
-  ): Promise<PaginatedResult<any>>;
+  ): Promise<PaginatedResult<AuditLog>>;
 
   /**
    * Count audit logs matching filters
