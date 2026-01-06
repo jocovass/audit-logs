@@ -1,15 +1,14 @@
-import { AuditLog } from '../../audit-logs/entities/audit-log.entity';
-
+import { AuditLog } from './audit-log.entity';
 import {
   PaginatedResult,
   PaginationOptions,
-} from '../../common/interfaces/api-interface';
+} from '../common/interfaces/api-interface';
 import {
   AuditAction,
   AuditActorType,
   AuditCategory,
   AuditSource,
-} from '../enums/audit-log.enums';
+} from './audit-log.enums';
 
 /**
  * Query filters for audit logs

@@ -1,11 +1,11 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
-import { BaseEntity } from '../../database/entity.base';
+import { BaseEntity } from '../database/entity.base';
 import {
   AuditAction,
   AuditActorType,
   AuditCategory,
   AuditSource,
-} from '../enums/audit-log.enums';
+} from './audit-log.enums';
 
 @Entity({ tableName: 'audit_logs' })
 @Index({ properties: ['timestamp'] })

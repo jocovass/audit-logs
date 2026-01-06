@@ -12,7 +12,7 @@ import {
   AuditActorType,
   AuditCategory,
   AuditSource,
-} from '../enums/audit-log.enums';
+} from '../audit-log.enums';
 import { Type } from 'class-transformer';
 
 export class QueryAuditLogDto {

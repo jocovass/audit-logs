@@ -1,12 +1,12 @@
 import {
   PaginationOptions,
   PaginatedResult,
-} from 'src/common/interfaces/api-interface';
-import { AuditLog } from '../entities/audit-log.entity';
+} from '../common/interfaces/api-interface';
+import { AuditLog } from './audit-log.entity';
 import {
   AuditLogQueryFilters,
   IAuditLogRepository,
-} from '../interfaces/audit-log-repository.interface';
+} from './audit-log-repository.interface';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
@@ -68,7 +68,7 @@ export class AuditLogRepository implements IAuditLogRepository {
 
     return {
       data,
-      nextCursor: hasNextPage ? data[data.length - 1].id : null,
+      nextCursor: hasNextPage ? data[data.length - 1]?.id : null,
       hasMore: hasNextPage,
     };
   }

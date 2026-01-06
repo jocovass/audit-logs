@@ -7,7 +7,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { AuditActorType } from '../enums/audit-log.enums';
+import { AuditActorType } from '../audit-log.enums';
 
 export class AuditActorDto {
   @IsDefined()
