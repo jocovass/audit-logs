@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:migrate:up": "MIKRO_ORM_CLI_CONFIG=src/database/mikro-orm.config.cli.ts pnpm exec mikro-orm migration:up",
     "db:migrate:down": "MIKRO_ORM_CLI_CONFIG=src/database/mikro-orm.config.cli.ts pnpm exec mikro-orm migration:down",
-    "db:generate:migration": "MIKRO_ORM_CLI_CONFIG=src/database/mikro-orm.config.ts pnpm exec mikro-orm migration:create",
+    "db:generate:migration": "MIKRO_ORM_CLI_CONFIG=src/database/mikro-orm.config.cli.ts pnpm exec mikro-orm migration:create",
     "db:generate:migration-blank": "MIKRO_ORM_CLI_CONFIG=src/database/mikro-orm.config.cli.ts pnpm exec mikro-orm migration:create --blank"
   },
   "dependencies": {

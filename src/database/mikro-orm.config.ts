@@ -24,8 +24,6 @@ export function buildDatabaseConfig({
 }): ReturnType<typeof defineConfig> {
   const highlighter = new SqlHighlighter();
 
-  console.log(process.env);
-
   return defineConfig({
     driver: PostgreSqlDriver,
     host,

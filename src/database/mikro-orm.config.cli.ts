@@ -6,7 +6,8 @@ loadEnv({ path: process.env.ENV_FILE_PATH ?? '.env' });
 export default buildDatabaseConfig({
   host: process.env.DATABASE_HOST!,
   port: parseInt(process.env.DATABASE_PORT!, 10),
-  user: process.env.DATABASE_USER!,
+  user: process.env.DATABASE_MIGRATION_USER!,
   password: process.env.DATABASE_PASSWORD!,
   dbName: process.env.DATABASE_NAME!,
+  ssl: false,
 });
