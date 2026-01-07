@@ -227,29 +227,21 @@ src/
 │   └── controllers/
 │       └── auth.controller.ts              # POST /auth/login
 │
-├── audit-logs/                       # Core Domain Module
+├── audit-logs/                            # Core Domain Module
 │   ├── audit-logs.module.ts
-│   │
-│   ├── entities/
-│   │   └── audit-log.entity.ts             # MikroORM entity
+│   ├── audit-log.entity.ts                # MikroORM entity
+│   ├── audit-log-repository.interface.ts  # (D: Dependency Inversion)
+│   ├── audit-log.repository.ts            # MikroORM implementation
+│   ├── audit-logs.controller.ts           # REST API endpoints (we possible don't need this)
 │   │
 │   ├── dto/
 │   │   ├── create-audit-log.dto.ts         # Input validation
 │   │   ├── query-audit-logs.dto.ts         # Query parameters
 │   │   └── audit-log-response.dto.ts       # Output shape
 │   │
-│   ├── interfaces/
-│   │   └── audit-log-repository.interface.ts  # (D: Dependency Inversion)
-│   │
-│   ├── repositories/
-│   │   └── audit-log.repository.ts         # MikroORM implementation
-│   │
-│   ├── services/
-│   │   ├── audit-log.service.ts            # Business logic
-│   │   └── checksum.service.ts             # Integrity verification
-│   │
-│   └── controllers/
-│       └── audit-logs.controller.ts        # REST API endpoints
+│   └── services/
+│       ├── audit-log.service.ts            # Business logic
+│       └── checksum.service.ts             # Integrity verification
 │
 ├── ingestion/                        # Event Ingestion Module (O: Open/Closed)
 │   ├── ingestion.module.ts
@@ -320,7 +312,7 @@ src/
 - [x] Create DTOs with validation
 - [x] Build AuditLogRepository (implements interface)
 - [x] Implement AuditLogService
-- [ ] Add checksum generation for immutability
+- [x] Add checksum generation for immutability
 
 ### Phase 2: Event Ingestion (Week 2)
 

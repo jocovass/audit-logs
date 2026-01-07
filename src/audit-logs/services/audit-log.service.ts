@@ -1,19 +1,20 @@
 import {
   Injectable,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { AuditLogRepository } from './audit-log.repository';
-import { AuditLog } from './audit-log.entity';
-import { AuditLogQueryFilters } from './audit-log-repository.interface';
+import { AuditLogRepository } from '../audit-log.repository';
+import { AuditLog } from '../audit-log.entity';
+import { AuditLogQueryFilters } from '../audit-log-repository.interface';
 import { PaginationOptions } from 'src/common/interfaces/api-interface';
+import { ChecksumService } from './checksum.service';
 
 @Injectable()
 export class AuditLogService {
-  private readonly logger = new Logger(AuditLogService.name);
-
-  constructor(private readonly auditLogRepository: AuditLogRepository) {}
+  constructor(
+    private readonly auditLogRepository: AuditLogRepository,
+    private readonly checksumService: ChecksumService,
+  ) {}
 
   private getAccountId(): string {
     // In a real implementation, retrieve the account ID from the context/session
@@ -22,11 +23,16 @@ export class AuditLogService {
 
   async createAuditLog(data: Omit<AuditLog, 'id' | 'accountId'>) {
     const accountId = this.getAccountId();
+    const checksum = this.checksumService.generateChecksum(data);
     try {
-      return await this.auditLogRepository.append(accountId, data);
+      return await this.auditLogRepository.append(accountId, {
+        ...data,
+        checksum,
+      });
     } catch (error) {
       if (error instanceof Error) {
-        this.logger.error(
+        // FIXME: Replace with proper logging
+        console.error(
           `Failed to create audit log: ${error.message}`,
           error.stack,
         );
@@ -48,7 +54,7 @@ export class AuditLogService {
       );
     } catch (error) {
       if (error instanceof Error) {
-        this.logger.error(
+        console.error(
           `Failed to retrieve audit logs: ${error.message}`,
           error.stack,
         );
@@ -67,11 +73,12 @@ export class AuditLogService {
       return data;
     } catch (error) {
       if (error instanceof NotFoundException) {
+        console.error(error.message);
         throw error;
       }
 
       if (error instanceof Error) {
-        this.logger.error(
+        console.error(
           `Failed to retrieve audit log by ID: ${error.message}`,
           error.stack,
         );
