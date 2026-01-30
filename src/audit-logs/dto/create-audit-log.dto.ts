@@ -7,7 +7,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { AuditAction, AuditCategory, AuditSource } from '../audit-log.enums';
+import { AuditAction, AuditCategory } from '../audit-log.enums';
 import { AuditActorDto } from './audit-actor.dto';
 
 export class CreateAuditLogDto {
@@ -32,10 +32,6 @@ export class CreateAuditLogDto {
   @IsDefined()
   @IsObject()
   resource!: Record<string, unknown>;
-
-  @IsDefined()
-  @IsEnum(AuditSource)
-  source!: AuditSource;
 
   @IsOptional()
   @IsObject()

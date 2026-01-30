@@ -3,12 +3,7 @@ import {
   PaginatedResult,
   PaginationOptions,
 } from '../common/interfaces/api-interface';
-import {
-  AuditAction,
-  AuditActorType,
-  AuditCategory,
-  AuditSource,
-} from './audit-log.enums';
+import { AuditAction, AuditActorType, AuditCategory } from './audit-log.enums';
 
 /**
  * Query filters for audit logs
@@ -19,7 +14,6 @@ export type AuditLogQueryFilters = {
   actorType?: AuditActorType;
   action?: AuditAction;
   category?: AuditCategory;
-  source?: AuditSource;
   correlationId?: string;
   startDate?: Date;
   endDate?: Date;

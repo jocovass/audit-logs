@@ -6,13 +6,13 @@ A standalone audit logging service built with NestJS 11 and MikroORM (PostgreSQL
 
 ## Overview
 
-| Feature               | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| **Event Ingestion**   | Receive audit events via HTTP, Webhooks, or Message Queues |
-| **Validation**        | Normalize and validate incoming data                       |
-| **Immutable Storage** | Store audit logs that cannot be modified or deleted        |
-| **Query API**         | REST API with filtering, pagination, and search            |
-| **Dashboard**         | Timeline view, filters, and analytics graphs               |
+| Feature               | Description                                         |
+| --------------------- | --------------------------------------------------- |
+| **Event Ingestion**   | Receive audit events via HTTP or Message Queues     |
+| **Validation**        | Normalize and validate incoming data                |
+| **Immutable Storage** | Store audit logs that cannot be modified or deleted |
+| **Query API**         | REST API with filtering, pagination, and search     |
+| **Dashboard**         | Timeline view, filters, and analytics graphs        |
 
 ---
 
@@ -35,7 +35,7 @@ A standalone audit logging service built with NestJS 11 and MikroORM (PostgreSQL
 | Principle                 | How We Apply It                                                                                                                                                       |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **S**ingle Responsibility | Each service does ONE thing: `AuditLogService` handles business logic, `AuditLogRepository` handles persistence, `EventNormalizerService` handles data transformation |
-| **O**pen/Closed           | New event sources (HTTP, Webhook, Queue) can be added without modifying existing code — they all implement `IEventSource`                                             |
+| **O**pen/Closed           | New event sources (HTTP, Queue) can be added without modifying existing code — they all implement `IEventSource`                                                      |
 | **L**iskov Substitution   | Any `IEventSource` implementation can replace another; any `IStorageProvider` can be swapped (Postgres → MongoDB)                                                     |
 | **I**nterface Segregation | Small, focused interfaces: `IAuditLogRepository` (CRUD), `IEventValidator` (validation), `IEventNormalizer` (transformation)                                          |
 | **D**ependency Inversion  | Services depend on interfaces (abstractions), not concrete classes. Repository interface injected via NestJS DI                                                       |
@@ -113,10 +113,6 @@ interface AuditLog {
   // The diff if the operation was update or smthing
   changes?: Record<string, unkown>;
 
-  // Context
-  source: string; // web, api, webhook, queue
-  metadata?: Record<string, unknown>;
-
   // Integrity
   checksum: string; // SHA-256 hash for immutability verification
 }
@@ -145,16 +141,13 @@ src/
 ├── common/                           # Shared utilities
 │   ├── interfaces/
 │   │   ├── repository.interface.ts         # Base repository contract
-│   │   ├── event-source.interface.ts       # Event source contract
 │   │   └── event-normalizer.interface.ts   # Normalizer contract
 │   ├── decorators/
 │   │   └── audit-actor.decorator.ts        # Extract actor from request
 │   ├── filters/
 │   │   └── http-exception.filter.ts        # Global error handling
-│   ├── pipes/
-│   │   └── validation.pipe.ts              # Global validation
-│   └── utils/
-│       └── checksum.util.ts                # SHA-256 hashing
+│   └── pipes/
+│       └── validation.pipe.ts              # Global validation (uses the built in validator from nest)
 │
 ├── config/                           # Configuration (S: Single Responsibility)
 │   ├── config.module.ts
@@ -232,7 +225,7 @@ src/
 │   ├── audit-log.entity.ts                # MikroORM entity
 │   ├── audit-log-repository.interface.ts  # (D: Dependency Inversion)
 │   ├── audit-log.repository.ts            # MikroORM implementation
-│   ├── audit-logs.controller.ts           # REST API endpoints (we possible don't need this)
+│   ├── audit-logs.controller.ts           # REST API endpoints
 │   │
 │   ├── dto/
 │   │   ├── create-audit-log.dto.ts         # Input validation
@@ -243,15 +236,11 @@ src/
 │       ├── audit-log.service.ts            # Business logic
 │       └── checksum.service.ts             # Integrity verification
 │
-├── ingestion/                        # Event Ingestion Module (O: Open/Closed)
+├── ingestion/                              # Event Ingestion Module (O: Open/Closed)
 │   ├── ingestion.module.ts
 │   │
-│   ├── interfaces/
-│   │   └── event-source.interface.ts       # Contract for all sources
-│   │
 │   ├── controllers/
-│   │   ├── http-events.controller.ts       # POST /events
-│   │   └── webhook.controller.ts           # POST /webhooks/:provider
+│   │   └── http-events.controller.ts       # POST /events
 │   │
 │   ├── services/
 │   │   ├── event-normalizer.service.ts     # Transform to standard format
@@ -316,12 +305,10 @@ src/
 
 ### Phase 2: Event Ingestion (Week 2)
 
-- [ ] Create ingestion module
-- [ ] Build HTTP events controller (POST /events)
-- [ ] Build webhook controller (POST /webhooks/:provider)
-- [ ] Implement EventNormalizerService
+- [x] Create ingestion module
+- [x] Build HTTP events controller (POST /events)
 - [ ] Add EventValidatorService
-- [ ] Support multiple webhook formats (GitHub, Stripe, custom)
+- [ ] Add log level to audit log (info, debug, warning, fatal)
 
 ### Phase 3: Query API (Week 3)
 
@@ -359,11 +346,10 @@ src/
 
 ### Event Ingestion
 
-| Method | Endpoint              | Description                           |
-| ------ | --------------------- | ------------------------------------- |
-| `POST` | `/events`             | Ingest a single audit event           |
-| `POST` | `/events/batch`       | Ingest multiple events                |
-| `POST` | `/webhooks/:provider` | Receive webhook from external service |
+| Method | Endpoint        | Description                 |
+| ------ | --------------- | --------------------------- |
+| `POST` | `/events`       | Ingest a single audit event |
+| `POST` | `/events/batch` | Ingest multiple events      |
 
 ### Audit Logs Query
 

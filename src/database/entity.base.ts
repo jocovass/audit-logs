@@ -12,7 +12,7 @@ export abstract class BaseEntity<Optional = never> {
     columnType: 'timestamptz',
     defaultRaw: 'now()',
   })
-  createdAt = new Date();
+  createdAt? = new Date();
 
   @Property({
     type: 'datetime',
@@ -20,5 +20,5 @@ export abstract class BaseEntity<Optional = never> {
     onUpdate: () => new Date(),
     defaultRaw: 'now()',
   })
-  updatedAt = new Date();
+  updatedAt? = new Date();
 }

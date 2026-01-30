@@ -1,11 +1,6 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntity } from '../database/entity.base';
-import {
-  AuditAction,
-  AuditActorType,
-  AuditCategory,
-  AuditSource,
-} from './audit-log.enums';
+import { AuditAction, AuditActorType, AuditCategory } from './audit-log.enums';
 
 @Entity({ tableName: 'audit_logs' })
 @Index({ properties: ['timestamp'] })
@@ -46,9 +41,6 @@ export class AuditLog extends BaseEntity {
 
   @Property({ type: 'jsonb', nullable: true })
   changes?: Record<string, unknown>;
-
-  @Enum(() => AuditSource)
-  source!: AuditSource;
 
   @Property({ type: 'jsonb', nullable: true })
   metadata?: Record<string, unknown>;

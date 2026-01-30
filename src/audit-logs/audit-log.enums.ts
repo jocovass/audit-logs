@@ -21,10 +21,3 @@ export enum AuditCategory {
   SYSTEM = 'system',
   SECURITY = 'security',
 }
-
-export enum AuditSource {
-  API = 'api',
-  WEB = 'web',
-  SYSTEM = 'system',
-  WORKER = 'worker',
-}

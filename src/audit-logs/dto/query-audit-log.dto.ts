@@ -7,12 +7,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import {
-  AuditAction,
-  AuditActorType,
-  AuditCategory,
-  AuditSource,
-} from '../audit-log.enums';
+import { AuditAction, AuditActorType, AuditCategory } from '../audit-log.enums';
 import { Type } from 'class-transformer';
 
 export class QueryAuditLogDto {
@@ -45,10 +40,6 @@ export class QueryAuditLogDto {
   @Type(() => Date)
   @IsDate()
   startDate?: Date;
-
-  @IsOptional()
-  @IsEnum(AuditSource)
-  source?: AuditSource;
 
   @IsOptional()
   @IsUUID()

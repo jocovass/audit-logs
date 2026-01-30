@@ -21,7 +21,7 @@ export class AuditLogService {
     return 'accountId-placeholder';
   }
 
-  async createAuditLog(data: Omit<AuditLog, 'id' | 'accountId'>) {
+  async createAuditLog(data: Omit<AuditLog, 'id' | 'accountId' | 'checksum'>) {
     const accountId = this.getAccountId();
     const checksum = this.checksumService.generateChecksum(data);
     try {
